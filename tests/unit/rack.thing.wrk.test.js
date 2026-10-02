@@ -1,6 +1,9 @@
 'use strict'
 
 const test = require('brittle')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const TetherWrkBase = require('@tetherto/tether-wrk-base/workers/base.wrk.tether')
 const WrkProcVar = require('../../workers/rack.thing.wrk')
 const lWrkFunLogs = require('../../workers/lib/wrk-fun-logs')
@@ -2121,6 +2124,9 @@ function buildStartWorker (extra = {}) {
       parseInputJSON: (req) => req,
       toOutJSON: (res) => res,
       dht: { defaultKeyPair: { publicKey: Buffer.alloc(32, 2) } }
+    },
+    store_s0: {
+      opts: { storeDir: path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'thing-store-')), 'test-rack') }
     },
     store_s1: {
       getBee: async () => db,

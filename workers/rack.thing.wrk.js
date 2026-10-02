@@ -16,6 +16,8 @@ const lWrkFunRollups = require('./lib/wrk-fun-rollups')
 const lWrkFunReplica = require('./lib/wrk-fun-replica')
 const lWrkFunSettings = require('./lib/wrk-fun-settings')
 const { exit } = require('node:process')
+const { chmod } = require('node:fs/promises')
+const path = require('node:path')
 const { getLogsCountForTimeRange, getLogMaxHeight, getJsonChanges, aggregateLogs, getThingSorter } = require('./lib/utils')
 const { STAT_RTD, OPTIONAL_CONFIGS, RPC_METHODS, AUDIT_METHODS, MAIN_DB } = require('./lib/constants')
 
@@ -1817,8 +1819,10 @@ class WrkProcVar extends TetherWrkBase {
         thingConf.storeSnapItvMs = thingConf.storeSnapItvMs || 300000
         thingConf.collectSnapTimeoutMs = thingConf.collectSnapTimeoutMs || 120000
 
+        await chmod(path.dirname(this.store_s0.opts.storeDir), 0o700)
+
         this.status.rpcPublicKey = this.getRpcKey().toString('hex')
-        this.status.storeS1PrimaryKey = this.store_s1.store.primaryKey.toString('hex')
+        delete this.status.storeS1PrimaryKey
 
         // rpc client key to be allowed through destination server firewall
         this.status.rpcClientKey = this.net_r0.dht.defaultKeyPair.publicKey.toString('hex')

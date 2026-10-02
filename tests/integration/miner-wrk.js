@@ -124,6 +124,11 @@ test('integration:worker', { timeout: 90000 }, async (main) => {
   startRpcClient()
   await registerThing()
 
+  await main.test('store dir is private and status omits the store primary key', async (t) => {
+    t.is(fs.statSync(storeDir).mode & 0o777, 0o700)
+    t.absent(JSON.parse(fs.readFileSync(`${statusDir}/wrk-miner-rack-test-${rack}.json`)).storeS1PrimaryKey)
+  })
+
   await main.test('updateThing rebuilds the live controller with new opts (e2e)', async (t) => {
     // The DHT/RPC handshake at startup is racy, so registerThing can time out on
     // the first attempt; wait for the thing to be registered+connected, retrying
